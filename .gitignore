@@ -1,0 +1,23 @@
+# Segredos
+.env
+Github token.txt
+
+# Banco de dados local
+data/
+*.db
+
+# Binários compilados
+dist/
+vlog-sync
+cmd/client/build/
+
+# Arquivos de teste do Vassal
+*.vlog
+teste/
+
+# Editor
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db

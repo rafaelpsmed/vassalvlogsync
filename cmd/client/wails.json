@@ -1,0 +1,21 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "vassal-vlog-sync",
+  "outputfilename": "vassal-vlog-sync",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "",
+  "author": {
+    "name": "Rafael"
+  },
+  "info": {
+    "companyName": "Vassal vLog Sync",
+    "productName": "Vassal vLog Sync",
+    "productVersion": "0.1.0"
+  },
+  "wailsjsdir": "./frontend",
+  "assetdir": "./frontend/dist",
+  "reloaddirs": "frontend/dist",
+  "build:tags": "webkit2_41"
+}

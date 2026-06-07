@@ -1,0 +1,6 @@
+ Para testar:
+     # Terminal 1
+     go run ./cmd/server
+
+     # Terminal 2
+     PATH="$HOME/go/bin:$PATH" ./scripts/dev-gui.sh

@@ -1,0 +1,87 @@
+services:
+  server:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      - ADDR=:8080
+      - DATABASE_DRIVER=${DATABASE_DRIVER:-sqlite}
+      - DATABASE_DSN=${DATABASE_DSN:-file:./data/vassalvlogsync.db?_pragma=foreign_keys(1)}
+      - STORAGE_DRIVER=${STORAGE_DRIVER:-local}
+      - DATA_DIR=${DATA_DIR:-./data/vlogs}
+      - BASE_URL=${BASE_URL:-http://localhost:8080}
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
+      - S3_BUCKET=${S3_BUCKET:-}
+      - S3_USE_SSL=${S3_USE_SSL:-}
+      - REDIS_ADDR=${REDIS_ADDR:-}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${REDIS_DB:-}
+      - RATE_LIMIT_DRIVER=${RATE_LIMIT_DRIVER:-memory}
+      - RATE_LIMIT_RATE=${RATE_LIMIT_RATE:-30}
+      - RATE_LIMIT_BURST=${RATE_LIMIT_BURST:-60}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vassal
+      POSTGRES_PASSWORD: vassal
+      POSTGRES_DB: vassalvlogsync
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    profiles:
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: vassal
+      MINIO_ROOT_PASSWORD: vassalvlog
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    profiles:
+      - dev
+
+volumes:
+  pgdata:
+  redis_data:
+  caddy_data:
+  minio_data:
